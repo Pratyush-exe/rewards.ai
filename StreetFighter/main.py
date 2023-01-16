@@ -3,7 +3,7 @@ from Player.Player import Player
 
 pygame.init()
 
-SCREEN_WIDTH = 1000
+SCREEN_WIDTH = 1500
 SCREEN_HEIGHT = 500
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

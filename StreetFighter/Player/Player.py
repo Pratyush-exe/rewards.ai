@@ -21,6 +21,7 @@ class Player:
         self.idle = True
         self.walking = False
         self.crouch = False
+        self.combo_attacking = False
         self.isRight = isRight
 
         self.jumping = False
@@ -54,6 +55,14 @@ class Player:
         self.jump_up = self.jump_sprite_sheet.get_image(0, 120, 80, 5, BLACK)
         self.jump_down = self.jump_sprite_sheet.get_image(1, 120, 80, 5, BLACK)
 
+        # combo_attack
+        self.combo_attack_animation_step = 10
+        self.combo_attack_animation_cooldown = 100
+        self.combo_attack_sprite_sheet = SpriteSheet(pygame.image.load('./assets/_AttackCombo.png').convert_alpha())
+        self.combo_attack_animation = [self.combo_attack_sprite_sheet.get_image(i, 120, 80, 5, BLACK) for i in
+                                 range(self.combo_attack_animation_step)]
+        self.combo_attack_animation_frame = 0
+
     def update(self):
         if self.idle:
             self.walk_animation_frame = 0
@@ -68,12 +77,19 @@ class Player:
                 self.walk_animation_frame = 0
 
         if self.jumping:
-            self.y -= self.vel_y * 5
+            self.y -= self.vel_y * 6
             self.vel_y -= 10
             if self.vel_y < -20:
                 self.jumping = False
                 self.vel_y = 20
                 self.y = 0
+
+        if self.combo_attacking:
+            print(self.combo_attack_animation_frame)
+            self.combo_attack_animation_frame += 1
+            if self.combo_attack_animation_frame == 10:
+                self.combo_attacking = False
+                self.combo_attack_animation_frame = 0
 
     def draw(self):
         if self.idle:
@@ -96,19 +112,25 @@ class Player:
                 self.screen.blit(
                     pygame.transform.flip(self.jump_down, flip_x=not self.isRight, flip_y=False), (self.x, self.y))
 
-        pygame.draw.rect(self.screen, (255, 255, 255),
-                         pygame.Rect(
-                             self.x + 250, self.y + 200 + (80 if self.crouch else 0),
-                             100, 200 - (80 if self.crouch else 0)), 1
-                         )
+        if self.combo_attacking:
+            self.screen.blit(
+                pygame.transform.flip(self.combo_attack_animation[self.combo_attack_animation_frame], flip_x=not self.isRight,
+                                      flip_y=False), (self.x, self.y))
+
+        # pygame.draw.rect(self.screen, (255, 255, 255),
+        #                  pygame.Rect(
+        #                      self.x + 250, self.y + 200 + (80 if self.crouch else 0),
+        #                      100, 200 - (80 if self.crouch else 0)), 1
+        #                  )
 
     def move(self):
         dx = 0
         dy = 0
+
         key = pygame.key.get_pressed()
         if not self.jumping and pygame.KEYDOWN and key[pygame.K_w]:
             self.jumping = True
-        if key[pygame.K_a]:
+        if key[pygame.K_a]:ww
             dx = -2
             self.isRight = False
             self.walking = True
@@ -124,6 +146,8 @@ class Player:
             self.walking = False
             self.idle = False
             self.crouch = True
+        elif not self.combo_attacking and key[pygame.K_q]:
+            self.combo_attacking = True
         else:
             self.walking = False
             self.idle = True
