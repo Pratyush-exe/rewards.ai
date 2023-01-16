@@ -22,6 +22,7 @@ class Player:
         self.walking = False
         self.crouch = False
         self.combo_attacking = False
+        self.single_attacking = False
         self.isRight = isRight
 
         self.jumping = False
@@ -60,8 +61,16 @@ class Player:
         self.combo_attack_animation_cooldown = 100
         self.combo_attack_sprite_sheet = SpriteSheet(pygame.image.load('./assets/_AttackCombo.png').convert_alpha())
         self.combo_attack_animation = [self.combo_attack_sprite_sheet.get_image(i, 120, 80, 5, BLACK) for i in
-                                 range(self.combo_attack_animation_step)]
+                                       range(self.combo_attack_animation_step)]
         self.combo_attack_animation_frame = 0
+
+        # single_attack
+        self.single_attack_animation_step = 4
+        self.single_attack_animation_cooldown = 100
+        self.single_attack_sprite_sheet = SpriteSheet(pygame.image.load('./assets/_CrouchAttack.png').convert_alpha())
+        self.single_attack_animation = [self.single_attack_sprite_sheet.get_image(i, 120, 80, 5, BLACK) for i in
+                                        range(self.single_attack_animation_step)]
+        self.single_attack_animation_frame = 0
 
     def update(self):
         if self.idle:
@@ -85,11 +94,16 @@ class Player:
                 self.y = 0
 
         if self.combo_attacking:
-            print(self.combo_attack_animation_frame)
             self.combo_attack_animation_frame += 1
-            if self.combo_attack_animation_frame == 10:
+            if self.combo_attack_animation_frame == self.combo_attack_animation_step:
                 self.combo_attacking = False
                 self.combo_attack_animation_frame = 0
+
+        if self.single_attacking:
+            self.single_attack_animation_frame += 1
+            if self.single_attack_animation_frame == self.single_attack_animation_step:
+                self.single_attacking = False
+                self.single_attack_animation_frame = 0
 
     def draw(self):
         if self.idle:
@@ -114,14 +128,21 @@ class Player:
 
         if self.combo_attacking:
             self.screen.blit(
-                pygame.transform.flip(self.combo_attack_animation[self.combo_attack_animation_frame], flip_x=not self.isRight,
+                pygame.transform.flip(self.combo_attack_animation[self.combo_attack_animation_frame],
+                                      flip_x=not self.isRight,
                                       flip_y=False), (self.x, self.y))
 
-        # pygame.draw.rect(self.screen, (255, 255, 255),
-        #                  pygame.Rect(
-        #                      self.x + 250, self.y + 200 + (80 if self.crouch else 0),
-        #                      100, 200 - (80 if self.crouch else 0)), 1
-        #                  )
+        if self.single_attacking:
+            self.screen.blit(
+                pygame.transform.flip(self.single_attack_animation[self.single_attack_animation_frame],
+                                      flip_x=not self.isRight,
+                                      flip_y=False), (self.x, self.y))
+
+        pygame.draw.rect(self.screen, (255, 255, 255),
+                         pygame.Rect(
+                             self.x + 250, self.y + 200 + (80 if self.crouch else 0),
+                             100, 200 - (80 if self.crouch else 0)), 1
+                         )
 
     def move(self):
         dx = 0
@@ -130,7 +151,7 @@ class Player:
         key = pygame.key.get_pressed()
         if not self.jumping and pygame.KEYDOWN and key[pygame.K_w]:
             self.jumping = True
-        if key[pygame.K_a]:ww
+        if key[pygame.K_a]:
             dx = -2
             self.isRight = False
             self.walking = True
@@ -148,6 +169,8 @@ class Player:
             self.crouch = True
         elif not self.combo_attacking and key[pygame.K_q]:
             self.combo_attacking = True
+        elif not self.single_attacking and key[pygame.K_e]:
+            self.single_attacking = True
         else:
             self.walking = False
             self.idle = True
