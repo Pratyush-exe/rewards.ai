@@ -115,7 +115,12 @@ class Player:
         elif not self.jumping and not self.crouch:
             self.char_rect.y = 200
 
-        self.char_rect.width = 300 if self.single_attacking or self.combo_attacking else 100
+        if self.single_attacking:
+            self.char_rect.width = 250
+        elif self.combo_attacking:
+            self.char_rect.width = 320
+        else:
+            self.char_rect.width = 100
 
         if self.idle:
             self.screen.blit(
@@ -149,7 +154,13 @@ class Player:
                                       flip_x=not self.isRight,
                                       flip_y=False), (self.x, self.y))
 
+        temp_x = self.char_rect.x
+        if not self.isRight and self.combo_attacking: self.char_rect.x -= 220
+        if not self.isRight and self.single_attacking: self.char_rect.x -= 150
+
         pygame.draw.rect(self.screen, (255, 255, 255), self.char_rect, 1)
+
+        self.char_rect.x = temp_x
 
     def move(self):
         dx = 0
