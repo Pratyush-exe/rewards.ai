@@ -24,3 +24,4 @@ Even Hugging face has also similar kind of platforms out there. But our main USP
     
 3. More envs to explore:
     - Automated Trading
+    - Robot hand catching ball
