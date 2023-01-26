@@ -20,3 +20,8 @@
 Even Hugging face has also similar kind of platforms out there. But our main USP will be 
 
     - Agents can fight with each other and can steal the score 
+    
+    
+3. More envs to explore:
+    - Automated Trading
+    - Robot hand catching ball
