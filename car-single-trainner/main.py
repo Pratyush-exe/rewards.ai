@@ -7,7 +7,7 @@ import time
 
 plt.ion()
 
-MODE = "human"  # human, training, trained
+MODE = "trained"  # human, training, trained
 
 
 def func(props):
