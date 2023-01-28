@@ -1,6 +1,7 @@
 import pygame
 import math
 import os
+from pathlib import Path
 
 pygame.init()
 
@@ -26,7 +27,7 @@ class Car:
     def initialize(self, screen):
         car_Scale = 500
         self.screen = screen
-        self.original_image = pygame.image.load(os.path.join("Assets", "car.png"))
+        self.original_image = pygame.image.load(Path(__file__).parent.joinpath(r"Assets\car.png"))
         self.original_image = pygame.transform.scale(self.original_image, (car_Scale, car_Scale))
         self.angle = 0
         self.image = pygame.transform.rotozoom(self.original_image, self.angle, 0.1)
@@ -125,8 +126,8 @@ class Car:
             self.alive = False
 
 
-class gameController:
-    def __init__(self, car_1, car_2, car_3):
+class GameController:
+    def __init__(self, cars):
         self.alive = True
         self.screen = pygame.display.set_mode((800, 700))
         self.screen.fill((0, 0, 0))
@@ -134,25 +135,21 @@ class gameController:
 
         self.FPS = 15
         self.iterations = 0
-        self.track = pygame.image.load(os.path.join("Assets", "track_test_7.png"))
+        self.track = pygame.image.load(Path(__file__).parent.joinpath(r"Assets\track_test_7.png"))
 
-        self.car_1 = car_1
-        self.car_2 = car_2
-        self.car_3 = car_3
+        self.cars = cars
 
         self.initialize()
 
     def initialize(self):
         self.screen = pygame.display.set_mode((800, 700))
-        self.car_1.initialize(self.screen)
-        self.car_2.initialize(self.screen)
-        self.car_3.initialize(self.screen)
+        for car in self.cars:
+            car.initialize(self.screen)
 
     def draw(self):
         self.screen.blit(self.track, (0, 0))
-        self.screen.blit(self.car_1.image, self.car_1.rect.topleft)
-        self.screen.blit(self.car_2.image, self.car_2.rect.topleft)
-        self.screen.blit(self.car_3.image, self.car_3.rect.topleft)
+        for car in self.cars:
+            self.screen.blit(car.image, car.rect.topleft)
         # pygame.display.update()
 
     def timeTicking(self):
@@ -166,13 +163,8 @@ class gameController:
                 pygame.quit()
                 quit()
         self.draw()
-        self.car_1.step(action[0])
-        self.car_2.step(action[1])
-        self.car_3.step(action[2])
 
-        if not self.car_1.alive:
-            self.car_1.initialize(self.screen)
-        if not self.car_2.alive:
-            self.car_2.initialize(self.screen)
-        if not self.car_3.alive:
-            self.car_3.initialize(self.screen)
+        for i, car in enumerate(self.cars):
+            car.step(action[i])
+            if not car.alive:
+                car.initialize(self.screen)
